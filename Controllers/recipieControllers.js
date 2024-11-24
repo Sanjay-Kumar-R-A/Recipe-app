@@ -1,102 +1,61 @@
-const recipies = [
-    {
-        id: 1,
-        name: "Panner fired rice",
-        procedure: "take fresh panneer, fried rice in the stove with rice and stir it",
-        ingredients: "Paneer, Tomato, Onion, Capsicum", 
-        Duration: 30
-    },
-    {
-        id: 2,
-        name: "Egg fired rice",
-        procedure: "take 2eggs fried rice in the stove with rice and stir it",
-        ingredients: "Eggs, Tomato, Onion, Capsicum", 
-        Duration: 30
-    },
-    {
-        id: 3,
-        name: "Chicken fired rice",
-        procedure: "take fresh chicken, fried rice in the stove with rice and stir it",
-        ingredients: "Chicken, Tomato, Onion, Capsicum", 
-        Duration: 30
-    },
-    {
-        id: 4,
-        name: "Mutton fired rice",
-        procedure: "take fresh mutton, fried rice in the stove with rice and stir it",
-        ingredients: "Mutton, Tomato, Onion, Capsicum", 
-        Duration: 30
-    },
-    {
-        id: 5,
-        name: "Beef fired rice",
-        procedure: "take fresh beef, fried rice in the stove with rice and stir it",
-        ingredients: "Beef, Tomato, Onion, Capsicum", 
-        Duration: 30
-    }
-]
+import recipies from "../models/recipieSchema.js";
 
-//get method
-export const getRecipies = (req,res) => {
-    res.status(200).json({data:recipies,message:"recipies fetched successfully"});
-};
-
-
-//getById method
-export const getRecipiesById = (req,res) => {
-    const recipieId = req.params.id;
-    const recipie = recipies.find((recipie) => recipie.id == recipieId);
-    if(!recipie) {
-        res.status(404).json({message:"recipie not found"});
-    }
-    res.status(200).json({data:recipie,message:"recipie fetched successfully"});
-};
-
-//post method
-export const createRecipie = (req,res) => {
-    const {name,procedure,ingredients,Duration} = req.body;
-
-    const newRecipie = {
-        id:recipies.length + 1,
-        name,
-        procedure,
-        ingredients,
-        Duration
-    }
-
-    recipies.push(newRecipie);
-    res.status(200).json({data:newRecipie,message:"new Recipie created successfully"});
-
-}
-
-//put method
-export const updateRecipie = (req,res) => {
-    const RecipieId = req.params.id;
-    const {name,procedure,ingredients,Duration} = req.body;
-
-    const Recipiedetail = recipies.find((ele) => ele.id == RecipieId);
-
-    if(Recipiedetail){
-        Recipiedetail.name = name;
-        Recipiedetail.procedure = procedure;
-        Recipiedetail.ingredients = ingredients;
-        Recipiedetail.Duration = Duration;
-        res.status(200).json({data:Recipiedetail,message:"Recipie updated successfully"});
-    }else{
-        res.status(404).json({message:"Recipie not found"});
+//createRecipe: Create a new recipe using POST method
+export const createRecipe = async (req, res) => {
+    try{
+        const newRecipie = await recipies.create(req.body);
+        await newRecipie.save();
+        res.status(200).json({message: "Recipie created successfully",data: newRecipie});
+    }catch(error){
+        res.status(500).json({message: "Internal server error in creating recipies",data: error});
     }
 }
 
-//delete method
-export const deleteRecipie = (req,res) => {
-    const RecipieId = req.params.id;
-    const index = recipies.find((ele) => ele.id == RecipieId);
+//getAllRecipes: Get all recipies using GET method
+export const getAllRecipies = async (req, res) => {
+    try{
+        const recipieData = await recipies.find();
+        res.status(200).json({message: "Recipies fetched successfully",data: recipieData});
+    }catch(error){
+        res.status(500).json({message: "Internal server error in fetching recipies",data: error});
+    }
+}
 
-    if(index ===-1){  
-        return res.status(404).json({message:"Recipie not found"}); 
-    }  
-        
-        recipies.splice(index,1);    
-        res.status(200).json({message:"Recipie deleted successfully"});
-    };
-    
+//getRecipeById: Retrieve a single recipe by ID using GET method
+export const getRecipeById = async (req, res) => {
+    try{
+        const recipieData = await recipies.findById(req.params.id);
+        if(!recipieData){
+            return res.status(404).json({message: "Recipie not found"});
+        }
+        res.status(200).json({message: "Recipie fetched successfully",data: recipieData});
+    }catch(error){
+        res.status(500).json({message: "Internal server error in fetching recipies",data: error});
+    }
+}
+
+//updateRecipe: Update a recipe by ID using PUT method
+export const updateRecipe = async (req, res) => {
+    try{
+        const recipieData = await recipies.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        if(!recipieData){
+            return res.status(404).json({message: "Recipie not found"});
+        }
+        res.status(200).json({message: "Recipie updated successfully",data: recipieData});
+    }catch(error){
+        res.status(500).json({message: "Internal server error in updating recipies",data: error});
+    }
+}
+
+//deleteRecipe: Delete a recipe by ID using DELETE method
+export const deleteRecipe = async (req, res) => {
+    try{
+        const recipieData = await recipies.findByIdAndDelete(req.params.id);
+        if(!recipieData){
+            return res.status(404).json({message: "Recipie not found"});
+        }
+        res.status(200).json({message: "Recipie deleted successfully",data: recipieData});
+    }catch(error){
+        res.status(500).json({message: "Internal server error in deleting recipies",data: error});
+    }   
+}

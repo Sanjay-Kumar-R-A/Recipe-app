@@ -1,16 +1,14 @@
-import express from "express";
-
-import {createRecipie, getRecipies,getRecipiesById,updateRecipie,deleteRecipie} from "../Controllers/recipieControllers.js"; 
+import express from 'express';
+import {createRecipe, getAllRecipies, getRecipeById, updateRecipe, deleteRecipe} from "../Controllers/recipieControllers.js";
 
 const router = express.Router();
 
-
-router.get("/allrecipies",getRecipies);
-router.get("/recipies/:id",getRecipiesById);
-router.post("/createnewrecipie",createRecipie);
-router.put("/updaterecipie/:id",updateRecipie);
-router.delete("/deleterecipie/:id",deleteRecipie);
-
+//custom routers
+router.post("/createnewrecipie", createRecipe);
+router.get("/getallrecipies", getAllRecipies);
+router.get("/getrecipiebyid/:id", getRecipeById);
+router.get("/updaterecipie/:id", updateRecipe);
+router.delete("/deleterecipie/:id", deleteRecipe);
 
 
 
